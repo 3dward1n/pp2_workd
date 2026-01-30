@@ -1,0 +1,10 @@
+x = 5
+print(type(x)) #output: <type 'int'>
+x = 1    # int
+y = 2.8  # float
+x = 1
+y = 35656222554887711
+z = -3255522
+print(type(x))
+print(type(y))
+print(type(z))
