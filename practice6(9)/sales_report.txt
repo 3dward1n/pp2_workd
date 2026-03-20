@@ -1,0 +1,7 @@
+Total records:9
+Average:4.7
+Highest:10
+Lowest:1
+
+Popular prod:
+Mouse 10Laptop 7Keyboard 8
