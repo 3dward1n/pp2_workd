@@ -1,30 +1,127 @@
 import psycopg2
 import csv
 
-# ТВОИ НАСТРОЙКИ (проверь имя базы и пароль!)
-DB_CONFIG = {
-    "dbname": "phonebooks", # то имя, которое ты дал в pgAdmin
-    "user": "postgres",       # стандартный юзер
-    "password": "13PostgreSQL631", # пароль, который вводил при установке Postgres
+DB_CONFIG={
+    "dbname": "phonebooks", 
+    "user": "postgres",       
+    "password": "13PostgreSQL631", 
     "host": "localhost",
     "port": "5432"
 }
 
+def csv(file_path):
+    try:
+        conn=psycopg2.connect(**DB_CONFIG)
+        cur=conn.cursor()
+        with open(contacts.csv, mode='r', encoding='utf-8') as f:
+            reader=csv.reader(f)
+            for row in reader:
+                name=row[0]
+                phone=row[1]
+                cur.execute(
+                    "INSERT INTO contacts (name, phone) VALUES (%s, %s)",
+                    (name, phone)
+                )
+                
+        conn.commit()
+        print(f"csv is finished")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        if 'conn' in locals():
+            conn.rollback() 
+    finally:
+        if 'cur' in locals(): cur.close()
+        if 'conn' in locals(): conn.close()
+
+conn=psycopg2.connect(**DB_CONFIG)
+cur=conn.cursor()
+cur.execute("SELECT * FROM contacts")
+r=cur.fetchall()
+conn.commit()
+for row in r:
+    print(row)
+cur.close()
+conn.close()
+
 def add_contact(name, phone):
     try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
+        conn=psycopg2.connect(**DB_CONFIG)
+        cur=conn.cursor()
         cur.execute("INSERT INTO contacts (name, phone) VALUES (%s, %s)", (name, phone))
         conn.commit()
         print(f"Контакт {name} добавлен!")
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"Ошибка: {e}")
+        print(f"Error: {e}")
 
-# Простой запуск для теста
-if __name__ == "__main__":
-    print("--- Проверка связи с базой ---")
-    name = input("Введите имя для теста: ")
-    phone = input("Введите телефон: ")
-    add_contact(name, phone)
+def change(phone, name,  id):
+    try:
+        conn=psycopg2.connect(**DB_CONFIG)
+        cur=conn.cursor()
+        cur.execute("UPDATE contacts SET phone = %s, name = %s WHERE id = %s", (phone, name,  id))
+        conn.commit()
+        print(f"Контакт {name} обновлен!")
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error: {e}")
+    
+def delete(id):
+    try:
+        conn=psycopg2.connect(**DB_CONFIG)
+        cur=conn.cursor()
+        cur.execute("DELETE FROM contacts WHERE id = %s", (id,))
+        conn.commit()
+        print(f"Deleting complete")
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error: {e}")
+
+a=""
+while a!="stop":
+
+    a=input()
+
+    if(a=="add"):
+        try:
+            print("--- Проверка связи с базой ---")
+            name=input("Введите имя для теста: ")
+            phone=input("Введите телефон: ")
+            add_contact(name, phone)
+        except Exception as e:
+            print(e)
+
+    if(a=="delete"):
+        try:
+            print("give id: ")
+            id=int(input())
+            delete(id)
+        except Exception as e:
+            print(e)
+            
+    if (a=="change"):
+        try:
+            print ("write down phone, name, id")
+            phone=input("phone ")
+            name=input("name ")
+            id=int(input("id "))
+            change(phone, name, id)
+        except Exception as e:
+            print(e)
+    
+    if (a=="table"):
+        conn=psycopg2.connect(**DB_CONFIG)
+        cur=conn.cursor()
+        cur.execute("SELECT * FROM contacts")
+        r=cur.fetchall()
+        conn.commit()
+        for row in r:
+            print(row)
+        cur.close()
+        conn.close()
+    
+    if (a=="csv"):
+        csv(file_path)
