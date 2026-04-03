@@ -9,11 +9,11 @@ DB_CONFIG={
     "port": "5432"
 }
 
-def csv(file_path):
+def icsv(file_path):
     try:
         conn=psycopg2.connect(**DB_CONFIG)
         cur=conn.cursor()
-        with open(contacts.csv, mode='r', encoding='utf-8') as f:
+        with open("contacts.csv", mode='r', encoding='utf-8') as f:
             reader=csv.reader(f)
             for row in reader:
                 name=row[0]
@@ -80,6 +80,17 @@ def delete(id):
     except Exception as e:
         print(f"Error: {e}")
 
+def find(srch_p):
+    try:
+        conn=psycopg2.connect(**DB_CONFIG)
+        cur=conn.cursor()
+        cur.execute("SELECT * FROM contacts WHERE phone ILIKE %s", (srch_p,))
+        res=cur.fetchall()
+        conn.commit()
+        for row in res:
+            print(row)
+    except Exception as e:
+        print(f"Error: {e}")
 a=""
 while a!="stop":
 
@@ -124,4 +135,8 @@ while a!="stop":
         conn.close()
     
     if (a=="csv"):
-        csv(file_path)
+        icsv("contacts.csv")
+
+    if (a=="find"):
+        srch_p=input("enter number with % in start or end")
+        print(find(srch_p))
